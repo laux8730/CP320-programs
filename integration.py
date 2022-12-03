@@ -19,15 +19,9 @@ IN3 = 20
 IN4 = 21
 stepper_pins = [IN1, IN2, IN3, IN4]
 
-step_sequence = []
-step_sequence.append([1, 0, 0, 0])
-step_sequence.append([0, 1, 1, 0])
-step_sequence.append([0, 0, 1, 1])
-step_sequence.append([1, 0, 0, 1])
 #potentiometer vars
 ADDRESS = 0X48
 pot = 0x43
-
 
 #Global variables
 FULL_ROTATION = 360
@@ -42,21 +36,93 @@ GPIO.setup(gpioServo, GPIO.OUT)
 GPIO.setup(gpioTrig, GPIO.OUT)
 GPIO.setup(gpioEcho, GPIO.IN)
 GPIO.setup(stepper_pins, GPIO.OUT)
+GPIO.setwarnings(False)
 
 #set value p as pulse width modulation
 p = GPIO.PWM(gpioServo, freq)
 
-bus = bus.SMBus(1)
+#bus = bus.SMBus(1)
 
-p.start(MIDDLE)
-count = 0
-try:
-    while True:
-        p.ChangeDutyCycle(LEFT)
+
+def stepperMotor():
+    step_sequence = []
+    step_sequence.append([1, 0, 0, 0])
+    step_sequence.append([0, 1, 1, 0])
+    step_sequence.append([0, 0, 1, 1])
+    step_sequence.append([1, 0, 0, 1])
+
+    for row in step_sequence:
+        GPIO.output(stepper_pins, row)
         time.sleep(1)
-        
-        count += 1
-except KeyboardInterrupt:
-    pass
-    print("keyboard interrupt")
+
+def servoMotor():
+    p.start(MIDDLE)
+    p.ChangeDutyCycle(LEFT)
+    time.sleep(1)
+    p.ChangeDutyCycle(RIGHT)
+    time.sleep(1)
+
+def ultrasonic():
+    # set Trigger to HIGH
+  GPIO.output(gpioTrig, True)
+
+  # set Trigger after 0.01ms to LOW
+  time.sleep(0.00001)
+  GPIO.output(gpioTrig, False)
+
+  StartTime = time.time()
+  StopTime = time.time()
+
+  # save StartTime
+  while GPIO.input(gpioEcho) == 0:
+      StartTime = time.time()
+
+  # save time of arrival
+  while GPIO.input(gpioEcho) == 1:
+      StopTime = time.time()
+
+  # time difference between start and arrival
+  TimeElapsed = StopTime - StartTime
+  # multiply with the sonic speed (34300 cm/s)
+  # and divide by 2, because there and back
+  distance = (TimeElapsed * 34300) / 2
+
+  return distance
+
+def potentiometer():
+    bus = smbus.SMBus(1)
+    bus.write_byte(ADDRESS,pot)
+    value = bus.read_byte(ADDRESS)
+    
+    return value
+
+while True:
+    '''
+    dist = ultrasonic()
+    print ("Measured Distance = %.1f cm" % dist)
+    time.sleep(0.7)
+    
+    value = potentiometer()
+    if(value >= 0 and value <= 100):
+        print("The value is between 0 and 100: ", value)
+    elif(value > 100 and value <= 200):
+        print("The value is between 100 and 200: ", value)
+    else:
+        print("The value is abover 200: ",  value)
+    time.sleep(1)
+    '''
+    servoMotor()
 GPIO.cleanup()
+
+
+
+
+
+
+
+
+
+
+
+
+
