@@ -30,6 +30,7 @@ LEFT = 0.5/20.0 * 100 # by testing (0.5ms)
 RIGHT = 2.5/20.0 * 100 # by testing (2.5ms)
 MIDDLE = 1.5/20.0 * 100  # by calculation (1.5ms / 20ms * 100)
 DEG = (RIGHT - LEFT) / 190.0 # assume range of server is ~190deg
+SONIC_SPEED = 34300
 
 #GPIO setup
 GPIO.setup(gpioServo, GPIO.OUT)
@@ -85,7 +86,7 @@ def ultrasonic():
   TimeElapsed = StopTime - StartTime
   # multiply with the sonic speed (34300 cm/s)
   # and divide by 2, because there and back
-  distance = (TimeElapsed * 34300) / 2
+  distance = (TimeElapsed * SONIC_SPEED) / 2
 
   return distance
 
