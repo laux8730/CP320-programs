@@ -119,8 +119,10 @@ if( response == 'servo'):
             distance = ultrasonic()
             degrees = servoAngle(distance, 0, 30, 0, 190)
             angle = LEFT + DEG*degrees
+            print("distance: ", distance)
+            print("angle: ",angle)
             p.ChangeDutyCycle(angle)
-            time.sleep(0.07)
+            time.sleep(1)
 
 elif(response == 'stepper'):
     
