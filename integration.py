@@ -33,9 +33,11 @@ DEG = (RIGHT - LEFT) / 190.0 # assume range of server is ~190deg
 SONIC_SPEED = 34300
 
 #GPIO setup
+
 GPIO.setup(gpioServo, GPIO.OUT)
 GPIO.setup(gpioTrig, GPIO.OUT)
 GPIO.setup(gpioEcho, GPIO.IN)
+
 GPIO.setup(stepper_pins, GPIO.OUT)
 
 
@@ -106,51 +108,45 @@ while (response != "servo" and response != "stepper"):
     response = input("Please enter servo or stepper: ")
 
 if( response == 'servo'):
+
     while True:
         
         value = potentiometer()
-        print(value)
-        if(value >= 0 and value < 101):
+        print("current potentiometer value: ", value)
+        if(value >= 0 and value < 101):                  #automatically rotates if pot value is between 0 and 100
             servoMotor(RIGHT,LEFT)
-        else:
+        else:                                            #uses ultrasonic to detect a value to generate a certain angle for the servo to move; basically moves servo based on ultrasonic detection
             distance = ultrasonic()
             degrees = servoAngle(distance, 0, 30, 0, 190)
             angle = LEFT + DEG*degrees
             p.ChangeDutyCycle(angle)
+            time.sleep(0.07)
 
 elif(response == 'stepper'):
-    response2 = ' '
-    while(response2 != "cw" and response2 != "ccw"):
-        response2 = input("please enter cw or ccw (clockwise or counter-clockwise): ")
+    
+    while True:
+        dist = ultrasonic()
+        print("ultrasonic dist: ", dist)
         steps = stepperMotor()
+        if(dist < 20):
+            
+                
+            for row in (steps): 
+                GPIO.output(stepper_pins,row)
+                time.sleep(0.01)
+        else:
+        
+            for row in reversed (steps):
+                    
+                GPIO.output(stepper_pins,row)
+                time.sleep(0.01)
+        time.sleep(0.01)
 
-        if(response2 == "cw"):
-            for row in steps:
-                GPIO.output(step_pins,row)
-                time.sleep(0.001)
-        elif(response2 == "ccw"):
-            for row in reversed steps:
-                GPIO.output(step_pins,row)
-                time.sleep(0.001)
 
-'''
-while True:
     
-    dist = ultrasonic()
-    print ("Measured Distance = %.1f cm" % dist)
-    time.sleep(0.7)
+
     
-    value = potentiometer()
-    if(value >= 0 and value <= 100):
-        print("The value is between 0 and 100: ", value)
-    elif(value > 100 and value <= 200):
-        print("The value is between 100 and 200: ", value)
-    else:
-        print("The value is abover 200: ",  value)
-    time.sleep(1)
-    
-    servoMotor()
-'''
+
 GPIO.cleanup()
 
 

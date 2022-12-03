@@ -11,8 +11,6 @@ IN3 = 20
 IN4 = 21
 FULL_ROTATION = 360
 STEP_ANGLE = 5.625
-complete_shaft = 0
-count = 1
 
 stepper_pins=[IN1, IN2, IN3, IN4]
 
@@ -34,22 +32,17 @@ try:
 	while True:
 		for row in reversed (stepper_sequence):
 		
-			#for row in stepper_sequence:
+		#for row in stepper_sequence:
 				
-			
 			GPIO.output(stepper_pins,row)
 			time.sleep(0.01)
-			if(complete_shaft == FULL_ROTATION):
-				num_of_steps = count
-			else:
-				count = count + 1
-				complete_shaft = STEP_ANGLE * count
+			
 				
 			
 except KeyboardInterrupt:
 	pass
 
 GPIO.cleanup()
-print("number of steps: ",num_of_steps)
+
 
 
