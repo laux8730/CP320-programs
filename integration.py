@@ -56,11 +56,11 @@ def stepperMotor():
         GPIO.output(stepper_pins, row)
         time.sleep(1)
 
-def servoMotor():
+def servoMotor(direction, direction2):
     p.start(MIDDLE)
-    p.ChangeDutyCycle(LEFT)
+    p.ChangeDutyCycle(direction)
     time.sleep(1)
-    p.ChangeDutyCycle(RIGHT)
+    p.ChangeDutyCycle(direction2)
     time.sleep(1)
 
 def ultrasonic():
@@ -97,8 +97,35 @@ def potentiometer():
     
     return value
 
+
+def mapToAngle(value, minD, maxD, minA, maxA):
+  output = minA + (float(value - minD) / float(maxD - minD) * (maxA - minA))
+  return max(min(output, maxA), minA)
+
+
+response = " "
+while (response != "servo" and response != "stepper"):
+    response = input("Please enter servo or stepper: ")
+
+if( response == 'servo'):
+    while True:
+        
+        value = potentiometer()
+        print(value)
+        if(value >= 0 and value < 101):
+            servoMotor(RIGHT,LEFT)
+        else:
+            dist = ultrasonic()
+            degrees = mapToAngle(dist, 0, 30, 0, 190)
+            angle = LEFT + DEG*degrees
+            p.ChangeDutyCycle(angle)
+        
+        
+
+
+'''
 while True:
-    '''
+    
     dist = ultrasonic()
     print ("Measured Distance = %.1f cm" % dist)
     time.sleep(0.7)
@@ -111,8 +138,9 @@ while True:
     else:
         print("The value is abover 200: ",  value)
     time.sleep(1)
-    '''
+    
     servoMotor()
+'''
 GPIO.cleanup()
 
 
