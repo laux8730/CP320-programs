@@ -76,8 +76,7 @@ device = max7219(serial, cascaded=1)
 seg = sevensegment(device)
 
 
-
-#scrolling_message(device, "HELLO EVERYONE! HELLO HELLO HELLO AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA")
+#main code
 seg.text = "HELLO"
 select = 1
 while(select != str(0)):
